@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 
-	// Overriding paintComponent from JPanel. This method is called every time the
+	// Ovverriding paintComponent from JPanel. This method is called every time the
 	// JPanel needs to be redrawn.
 	// The Graphics object g is the context on which we can draw shapes, lines,
 	// images, text etc.
@@ -88,8 +88,9 @@ public class GamePanel extends JPanel implements ActionListener {
 				g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 			}
 		}
-
 	}
+
+
 
 	// This method creates a new apple on the screen every time its called
 	public void newApple() {
