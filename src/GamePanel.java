@@ -20,7 +20,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE; // How many objects will fit on the screen
 	static final int DELAY = 75;
 
-	// Arrays hold all the cordinates for the body parts of the snake
+	// Arrays hold all the coordinates for the body parts of the snake
 	final int x[] = new int[GAME_UNITS];
 	final int y[] = new int[GAME_UNITS];
 	int bodyParts = 6;
@@ -35,7 +35,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	GamePanel() {
 		random = new Random();
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-		this.setBackground(Color.black);
+		this.setBackground(Color.BLACK);
 		this.setFocusable(true);
 		this.addKeyListener(new MyKeyAdapter());
 		startGame();
@@ -58,6 +58,14 @@ public class GamePanel extends JPanel implements ActionListener {
 	// images, text etc.
 
 	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		draw(g);
+
+	}
+
+	// Method for drawing game objects
+	// This should be called from gameCompinent method
+	public void draw(Graphics g) {
 
 		// grids on both x and y axis to make it easier for us to visualize how big
 		// objects will be
@@ -70,11 +78,16 @@ public class GamePanel extends JPanel implements ActionListener {
 		g.setColor(Color.red);
 		g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-	}
-
-	// Method for drawing game objects
-	// This should be called from gameCompinent method
-	public void draw(Graphics g) {
+		// Draw head of the snake
+		for (int i = 0; i < bodyParts; i++) {
+			if (i == 0) {
+				g.setColor(Color.green);
+				g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+			} else {
+				g.setColor(new Color(45, 180, 0));
+				g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+			}
+		}
 
 	}
 
@@ -89,6 +102,33 @@ public class GamePanel extends JPanel implements ActionListener {
 	// This should be filled with logic for game objects movements
 	public void move() {
 
+		// for loop to iterate the body parts of the snake
+		for (int i = bodyParts; i > 0; i--) {
+
+			// We are shifting all the coordinates in the array by one
+			x[i] = x[i - 1];
+			y[i] = y[i - 1];
+		}
+
+		// A switch to change the direction of our snake is going
+		switch (direction) {
+
+		// Create a case for all possible directions
+		case 'U':
+			y[0] = y[0] - UNIT_SIZE;
+			break;
+		case 'D':
+			y[0] = y[0] + UNIT_SIZE;
+			break;
+		case 'L':
+			y[0] = y[0] - UNIT_SIZE;
+			break;
+		case 'R':
+			y[0] = y[0] + UNIT_SIZE;
+			break;
+
+		}
+
 	}
 
 	// Method to check if the snake has reached the apple
@@ -99,6 +139,30 @@ public class GamePanel extends JPanel implements ActionListener {
 
 //Method to check if the snake has collided with itself or the wall.
 	public void checkCollisions() {
+		for (int i = bodyParts; i > 0; i++) {
+			if ((x[0] == x[i]) && y[0] == y[i]) {
+				running = false; // This will trigger a game over method (Head collides with body)
+			}
+			if (x[0] < 0) {
+				running = false; // if Head touches left border game over
+			}
+			if (x[0] > SCREEN_WIDTH) {
+				running = false; // if head touches right border
+			}
+
+			if (y[0] < 0) {
+				running = false; // if head touches top border
+			}
+
+			if (y[0] > SCREEN_HEIGHT) {
+				running = false; // if head touches bottom border
+			}
+
+			if (!running) {
+				timer.stop(); // stop timer
+			}
+
+		}
 
 	}
 
@@ -108,25 +172,34 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 
+	// This method is triggered when an action event occurs
+	// It can be triggered by various types of events such as button clicks, timer,
+	// etc
+	// The action event e object contains information about the action event
+	// This method needs to be filled with logic to handle action events
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		if (running) {
+			move();
+			checkApple();
+			checkCollisions();
+		}
+		repaint();
+
+	}
+
 	// Inner class: MyKeyAdapter - This class extends KeyAdapter( a class from the
 	// Java Swing library that responds to keyboard input)
+
 	public class MyKeyAdapter extends KeyAdapter {
+
 		// This method is triggered when a key is pressed on the keyboard
 		// The event e object contains information about the key pressed
-		// This method need to be filled with logic to handlekey pressed events
+		// This method need to be filled with logic to handle key pressed events
 
 		public void keypressed(KeyEvent e) {
 
 		}
-
 	}
-
-	public void actionPerformed(ActionEvent e) {
-		// This method is triggered when an action event occurs
-		// It can be triggered by various types of events such as button clicks, timer,
-		// etc
-		// The action event e object contains information about the action event
-		// This method needs to be filled with logic to handle action events
-	}
-
 }
